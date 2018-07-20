@@ -1,52 +1,65 @@
 
 const vscode = require('vscode');
 const axios = require('axios');
+const baseUrl = 'https://gupiao.baidu.com/api/rails/stockbasicbatch?stock_code=';
+const intervalTimeForShow = 3000;
+const intervalTimeForFetch = 5000;
+
+function keepTwoDecimal(num) {
+    var result = parseFloat(num);
+    if (isNaN(result)) {
+        return 0;
+    }
+    result = Math.round(num * 100) / 100;
+    return result;
+}
 
 function activate(context) {
-    const intervalTime = 5000;
-    let results = {}; //保存所有结果
+
+    let results = []; //保存所有结果
+    let codes = [];
     let current = 0;
 
-
     function displayResult() {
-        const codes = Object.keys(results);
-        const max = codes.length;
-        if(max && max >= current){
-            const key = codes[current];
-            const item = results[key];
+        const max = results.length;
+        if (max && max >= current) {
+            const item = results[current];
             current++;
             setTimeout(() => {
                 displayResult();
-            }, intervalTime);
-            const message = `📈「${key.substr(4)}」💰${item[0]} 😱${item[3]}%`;
+            }, intervalTimeForShow);
+
+            const message = `📈「${item.stockName}」💰${keepTwoDecimal(item.close)} 😱${keepTwoDecimal(item.netChangeRatio)}%`;
             vscode.window.setStatusBarMessage(message);
-        }else{
+        } else {
             current = 0;
             setTimeout(() => {
                 displayResult();
-            }, intervalTime);
+            }, intervalTimeForShow);
         }
     }
 
     function fetchAllData() {
-        const codes = Object.keys(results).join(',');
-        axios.get(`https://hq.finance.ifeng.com/q.php?l=${codes}`)
+        axios.get(`${baseUrl}${codes.join(',')}`)
             .then((rep) => {
                 const result = rep.data;
-                eval(result);
-                if(typeof json_q === 'object'){
-                    results = Object.assign(results, json_q);
+                if (result.errorNo === 0 && result.data.length) {
+                    results = result.data;
+                } else {
+                    vscode.window.showErrorMessage('获取数据失败，请检查股票代码是否有误！');
                 }
             });
     }
+
+
     displayResult();
-    setInterval(fetchAllData, 5000);
+    setInterval(fetchAllData, intervalTimeForFetch);
 
     let disposable = vscode.commands.registerCommand('extension.goUpStaying', function () {
         const options = {
             ignoreFocusOut: true,
             password: false,
-            prompt: "请输入股票代码"
+            prompt: "请输入股票代码，如600666"
         };
 
         vscode.window.showInputBox(options).then((value) => {
@@ -54,9 +67,11 @@ function activate(context) {
                 vscode.window.showInformationMessage('请输入股票代码，如600666');
             } else {
                 let code = value.trim();
-                code = 's_' + (code[0] === '6' ? 'sh' : 'sz') + code;
-                fetchData(code, (data) => {
-                    results[code] = data;
+                code = (code[0] === '6' ? 'sh' : 'sz') + code;
+                fetchData(code, () => {
+                    if (codes.indexOf(code) < 0) {
+                        codes.push(code);
+                    }
                     fetchAllData();
                 });
             }
@@ -69,17 +84,13 @@ function activate(context) {
 
 
 function fetchData(value, cb) {
-    axios.get(`https://hq.finance.ifeng.com/q.php?l=${value}`)
+    axios.get(`${baseUrl}${value}`)
         .then((rep) => {
             const result = rep.data;
-            if (result) {
-                const dataStr = result.match(/\[(.+?)\]/);
-                if (dataStr && dataStr[1]) {
-                    const data = dataStr[1].split(',');
-                    cb(data);
-                } else {
-                    vscode.window.showErrorMessage('获取数据失败，请检查股票代码是否有误！');
-                }
+            if (result.errorNo === 0 && result.data.length) {
+                cb(result.data[0]);
+            } else {
+                vscode.window.showErrorMessage('获取数据失败，请检查股票代码是否有误！');
             }
         }).catch(() => {
             vscode.window.showErrorMessage('获取数据失败，请检查网络或重试！');
