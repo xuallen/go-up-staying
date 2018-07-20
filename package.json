@@ -1,8 +1,8 @@
 {
     "name": "go-up-staying",
-    "displayName": "Go up staying",
+    "displayName": "Go Up Staying",
     "description": "The stock will go up staying.",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "publisher": "xuallen",
     "license": "MIT",
     "keywords": [
