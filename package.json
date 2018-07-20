@@ -2,7 +2,7 @@
     "name": "go-up-staying",
     "displayName": "Go up staying",
     "description": "The stock will go up staying.",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "publisher": "xuallen",
     "license": "MIT",
     "keywords": [
@@ -35,8 +35,7 @@
             {
                 "command": "extension.goUpStaying",
                 "key": "ctrl+shift+k",
-                "mac": "ctrl+shift+k",
-                "when": "editorTextFocus"
+                "mac": "ctrl+shift+k"
             }
         ]
     },
