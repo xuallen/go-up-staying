@@ -1,0 +1,57 @@
+{
+    "name": "go-up-staying",
+    "displayName": "Go up staying",
+    "description": "The stock will go up staying.",
+    "version": "0.0.1",
+    "publisher": "xuallen",
+    "license": "MIT",
+    "keywords": [
+        "stock",
+        "vscode"
+    ],
+    "icon": "stocks.png",
+    "engines": {
+        "vscode": "^1.25.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/xuallen/go-up-staying"
+    },
+    "activationEvents": [
+        "onCommand:extension.goUpStaying"
+    ],
+    "main": "./extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.goUpStaying",
+                "title": "Go up staying"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "extension.goUpStaying",
+                "key": "ctrl+shift+k",
+                "mac": "ctrl+shift+k",
+                "when": "editorTextFocus"
+            }
+        ]
+    },
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "eslint": "^4.11.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "axios": "^0.18.0"
+    }
+}
