@@ -14,7 +14,7 @@ function keepTwoDecimal(num) {
     return result;
 }
 
-function activate(context) {
+function activate() {
 
     let results = []; //保存所有结果
     let codes = [];
@@ -28,7 +28,7 @@ function activate(context) {
             setTimeout(() => {
                 displayResult();
             }, intervalTimeForShow);
-            const message = `「${item.stockName} 💰 ${keepTwoDecimal(item.close)} ${item.netChangeRatio > 0 ? '📈' : '📉'} ${keepTwoDecimal(item.netChangeRatio)}%`;
+            const message = `「${item.stockName}」 💰 ${keepTwoDecimal(item.close)} ${item.netChangeRatio > 0 ? '📈' : '📉'} ${keepTwoDecimal(item.netChangeRatio)}%`;
             vscode.window.setStatusBarMessage(message);
         } else {
             current = 0;
@@ -52,9 +52,8 @@ function activate(context) {
     displayResult();
     setInterval(fetchAllData, intervalTimeForFetch);
 
-    let disposable = vscode.commands.registerCommand('extension.goUpStaying', function () {
+    vscode.commands.registerCommand('extension.goUpStaying', function () {
         const options = {
-            ignoreFocusOut: true,
             password: false,
             prompt: "请输入股票代码，如600666"
         };
@@ -75,7 +74,22 @@ function activate(context) {
         })
     });
 
-    context.subscriptions.push(disposable);
+    vscode.commands.registerCommand('extension.removeStock', function () {
+        const items = results.map((item) => {
+            return { label: item.stockName, description: item.stockCode, exchange: item.exchange }
+        });
+
+        vscode.window.showQuickPick(items, { placeHolder: '请选择需要移除的股票' }).then((value) => {
+            if (value) {
+                codes = codes.filter(item => {
+                    return item !== (value.exchange + value.description)
+                })
+                results = results.filter(item => {
+                    return item.stockCode !== value.description
+                })
+            }
+        });
+    });
 }
 
 

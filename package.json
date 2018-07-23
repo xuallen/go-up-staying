@@ -2,7 +2,7 @@
     "name": "go-up-staying",
     "displayName": "Go Up Staying",
     "description": "The stock will go up staying.",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "publisher": "xuallen",
     "license": "MIT",
     "keywords": [
@@ -21,14 +21,18 @@
         "url": "https://github.com/xuallen/go-up-staying"
     },
     "activationEvents": [
-        "onCommand:extension.goUpStaying"
+        "onCommand:extension.goUpStaying",
+        "onCommand:extension.removeStock"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
                 "command": "extension.goUpStaying",
-                "title": "Go up staying"
+                "title": "Add stock"
+            }, {
+                "command": "extension.removeStock",
+                "title": "Remove stock"
             }
         ],
         "keybindings": [
@@ -36,6 +40,11 @@
                 "command": "extension.goUpStaying",
                 "key": "ctrl+shift+k",
                 "mac": "ctrl+shift+k"
+            },
+            {
+                "command": "extension.removeStock",
+                "key": "ctrl+shift+r",
+                "mac": "ctrl+shift+r"
             }
         ]
     },
