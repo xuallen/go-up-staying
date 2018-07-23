@@ -28,8 +28,7 @@ function activate(context) {
             setTimeout(() => {
                 displayResult();
             }, intervalTimeForShow);
-
-            const message = `📈「${item.stockName}」💰${keepTwoDecimal(item.close)} 😱${keepTwoDecimal(item.netChangeRatio)}%`;
+            const message = `「${item.stockName} 💰 ${keepTwoDecimal(item.close)} ${item.netChangeRatio > 0 ? '📈' : '📉'} ${keepTwoDecimal(item.netChangeRatio)}%`;
             vscode.window.setStatusBarMessage(message);
         } else {
             current = 0;
@@ -45,8 +44,6 @@ function activate(context) {
                 const result = rep.data;
                 if (result.errorNo === 0 && result.data.length) {
                     results = result.data;
-                } else {
-                    vscode.window.showErrorMessage('获取数据失败，请检查股票代码是否有误！');
                 }
             });
     }
@@ -90,7 +87,8 @@ function fetchData(value, cb) {
             if (result.errorNo === 0 && result.data.length) {
                 cb(result.data[0]);
             } else {
-                vscode.window.showErrorMessage('获取数据失败，请检查股票代码是否有误！');
+                const errMsg = result.data ? '获取数据失败，请检查股票代码是否有误！' : '获取数据失败，请检查网络或重试！';
+                vscode.window.showErrorMessage(errMsg);
             }
         }).catch(() => {
             vscode.window.showErrorMessage('获取数据失败，请检查网络或重试！');
